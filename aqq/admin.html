@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>لوحة تحكم المشرف</title>
+  <style>
+    :root{--bg1:#eff6ff;--bg2:#e0e7ff;--bg3:#f8fafc;--text:#0f172a;--muted:#64748b;--line:#e2e8f0;--blue:#2563eb;--shadow:0 18px 45px rgba(15,23,42,.10);}
+    *{box-sizing:border-box} body{margin:0;font-family:Arial,Helvetica,sans-serif;color:var(--text);background:radial-gradient(circle at top,var(--bg1),var(--bg2) 45%,var(--bg3) 75%)}
+    .container{max-width:1220px;margin:0 auto;padding:16px}
+    .card{background:rgba(255,255,255,.9);border:1px solid rgba(255,255,255,.8);border-radius:32px;box-shadow:var(--shadow);overflow:hidden}
+    .hero{background:linear-gradient(135deg,#0f172a,#1e293b,#334155);color:#fff;padding:28px}
+    .hero-top{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;flex-wrap:wrap}
+    .hero-badge{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.12);padding:8px 14px;border-radius:999px;font-size:14px}
+    .hero h1{margin:12px 0 8px;font-size:34px}.hero p{margin:0;color:rgba(255,255,255,.9);line-height:1.9}
+    .btn{border:none;cursor:pointer;border-radius:18px;min-height:48px;padding:0 18px;font:inherit;font-weight:700;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+    .btn-primary{background:var(--blue);color:#fff}.btn-secondary{background:#e2e8f0;color:#0f172a}.btn-danger{background:#fff1f2;color:#e11d48}
+    .content{padding:20px;display:grid;gap:16px}
+    .grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+    .stat{border-radius:24px;padding:18px;background:linear-gradient(135deg,#fff,#f8fafc);border:1px solid var(--line);box-shadow:0 8px 20px rgba(15,23,42,.04)}
+    .stat strong{display:block;font-size:30px;margin-top:10px}
+    .layout{display:grid;grid-template-columns:1.05fr .95fr;gap:16px}
+    .panel{background:#fff;border:1px solid var(--line);border-radius:24px;padding:18px;box-shadow:0 8px 20px rgba(15,23,42,.04)}
+    .panel h2{margin:0 0 8px;font-size:20px}.muted{color:var(--muted);font-size:13px}
+    .form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.full{grid-column:1/-1}
+    .field{display:grid;gap:8px}.field label{font-size:14px;font-weight:700}
+    .field input,.field select,.field textarea{width:100%;padding:14px;border-radius:18px;border:1px solid var(--line);background:#f8fafc;outline:none;font:inherit}
+    .field textarea{min-height:100px;resize:vertical}
+    .info-note{background:linear-gradient(135deg,#eff6ff,#f8fbff);border:1px dashed #bfdbfe;color:#334155;border-radius:18px;padding:14px 16px;line-height:1.8}
+    .table-wrap{overflow:auto;border-radius:18px;border:1px solid var(--line);background:#fff}
+    table{width:100%;border-collapse:collapse;min-width:700px}
+    th,td{padding:12px 14px;border-bottom:1px solid #eef2f7;text-align:right;font-size:14px}
+    th{background:#f8fafc;color:#334155;position:sticky;top:0}
+    .list{display:grid;gap:10px}.item{display:flex;justify-content:space-between;align-items:center;gap:10px;border:1px solid var(--line);background:#fff;border-radius:18px;padding:12px 14px}
+    .badge{min-width:64px;padding:8px 12px;border-radius:999px;background:#eef2ff;color:#4338ca;font-weight:700;text-align:center}
+    .toolbar{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
+    .tabs{display:flex;gap:8px;flex-wrap:wrap}
+    .tab-btn{border:none;background:#eef2f7;color:#0f172a;border-radius:999px;padding:10px 14px;cursor:pointer;font-weight:700}
+    .tab-btn.active{background:#2563eb;color:#fff}
+    .section-panel{display:none}
+    .section-panel.active{display:block}
+    .inline-actions{display:flex;gap:8px;flex-wrap:wrap}
+    .file-input{padding:12px;border:1px dashed var(--line);border-radius:18px;background:#f8fafc;width:100%}
+    .hidden{display:none!important}
+    @media (max-width:959px){.grid,.layout,.form-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<div class="container">
+  <section class="card">
+    <div class="hero">
+      <div class="hero-top">
+        <div>
+          <div class="hero-badge">لوحة تحكم المشرف</div>
+          <h1>إدارة المنصة والأسئلة</h1>
+          <p>إضافة أسئلة جديدة بدون تعديل الكود مباشرة، مع متابعة النتائج والمستخدمين من نفس المتصفح.</p>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <button class="btn btn-primary" id="back-btn">🏠 العودة للمنصة</button>
+          <button class="btn btn-secondary" id="export-btn">⬇️ تصدير الأسئلة المضافة</button>
+          <button class="btn btn-secondary" id="logout-btn">🚪 تسجيل خروج المشرف</button>
+        </div>
+      </div>
+    </div>
+    <div class="content">
+      <div class="grid">
+        <div class="stat"><div class="muted">إجمالي الأسئلة الأساسية</div><strong id="base-count">0</strong></div>
+        <div class="stat"><div class="muted">الأسئلة المضافة</div><strong id="custom-count">0</strong></div>
+        <div class="stat"><div class="muted">المستخدمون</div><strong id="users-count">0</strong></div>
+        <div class="stat"><div class="muted">المحاولات</div><strong id="results-count">0</strong></div>
+      </div>
+
+      <div class="layout">
+        <div class="panel">
+          <div class="toolbar">
+            <div>
+              <h2>إضافة سؤال جديد</h2>
+              <div class="muted">سيُحفظ السؤال محليًا ويظهر تلقائيًا داخل منصة الاختبار.</div>
+            </div>
+          </div>
+          <div class="info-note" style="margin:14px 0;">
+            يمكنك إضافة السؤال من هنا بدون تعديل الكود. السؤال المضاف يُحفظ داخل المتصفح الحالي، ويمكنك لاحقًا تصديره أو حذفه.
+          </div>
+          <div class="form-grid">
+            <div class="field">
+              <label for="q-category">القسم</label>
+              <input id="q-category" list="category-options" placeholder="اكتب القسم أو اختره" />
+              <datalist id="category-options"></datalist>
+            </div>
+            <div class="field">
+              <label for="q-correct">الإجابة الصحيحة</label>
+              <select id="q-correct">
+                <option value="0">الخيار الأول</option>
+                <option value="1">الخيار الثاني</option>
+                <option value="2">الخيار الثالث</option>
+                <option value="3">الخيار الرابع</option>
+              </select>
+            </div>
+            <div class="field full">
+              <label for="q-question">نص السؤال</label>
+              <textarea id="q-question" placeholder="اكتب السؤال هنا"></textarea>
+            </div>
+            <div class="field"><label for="q-opt1">الخيار الأول</label><input id="q-opt1" /></div>
+            <div class="field"><label for="q-opt2">الخيار الثاني</label><input id="q-opt2" /></div>
+            <div class="field"><label for="q-opt3">الخيار الثالث</label><input id="q-opt3" /></div>
+            <div class="field"><label for="q-opt4">الخيار الرابع</label><input id="q-opt4" /></div>
+          </div>
+          <div id="save-feedback" class="muted" style="margin-top:12px; min-height:20px;"></div>
+          <div style="display:flex; justify-content:flex-end; margin-top:14px;">
+            <button class="btn btn-primary" id="save-question-btn">💾 حفظ السؤال</button>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2>آخر النتائج</h2>
+          <div class="muted">نتائج المتدربين المحفوظة محليًا.</div>
+          <div class="table-wrap" style="margin-top:14px;">
+            <table>
+              <thead><tr><th>المستخدم</th><th>القسم</th><th>النتيجة</th><th>النسبة</th><th>التاريخ</th></tr></thead>
+              <tbody id="results-table"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="layout">
+        <div class="panel">
+          <div class="toolbar">
+            <div>
+              <h2>الأسئلة المضافة</h2>
+              <div class="muted">يمكنك حذف أي سؤال مضاف من هنا.</div>
+            </div>
+            <button class="btn btn-danger" id="clear-custom-btn">🗑️ حذف كل الأسئلة المضافة</button>
+          </div>
+          <div class="list" id="custom-questions-list" style="margin-top:14px;"></div>
+        </div>
+
+        <div class="panel">
+          <h2>المستخدمون المسجلون</h2>
+          <div class="muted">المستخدمون الذين دخلوا المنصة من هذا المتصفح.</div>
+          <div class="list" id="users-list" style="margin-top:14px;"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+const STORAGE_USER_KEY = "it-platform-current-user";
+const STORAGE_CUSTOM_KEY = "it-platform-custom-questions";
+const STORAGE_RESULTS_KEY = "it-platform-student-results";
+const STORAGE_USERS_KEY = "it-platform-users";
+const STORAGE_ADMIN_SETTINGS_KEY = "it-platform-admin-settings";
+const DEFAULT_ADMIN_USERNAME = "admin";
+const DEFAULT_ADMIN_PASSWORD = "admin2026";
+
+function getCurrentUser(){try{return JSON.parse(localStorage.getItem(STORAGE_USER_KEY)||"null")}catch{return null}}
+
+function getAdminSettings(){
+  try{
+    const saved = JSON.parse(localStorage.getItem(STORAGE_ADMIN_SETTINGS_KEY) || "null");
+    return {
+      username: saved?.username || DEFAULT_ADMIN_USERNAME,
+      password: saved?.password || DEFAULT_ADMIN_PASSWORD
+    };
+  }catch{
+    return { username: DEFAULT_ADMIN_USERNAME, password: DEFAULT_ADMIN_PASSWORD };
+  }
+}
+function saveAdminSettings(settings){
+  localStorage.setItem(STORAGE_ADMIN_SETTINGS_KEY, JSON.stringify(settings));
+}
+
+function clearCurrentUser(){localStorage.removeItem(STORAGE_USER_KEY)}
+function getCustomQuestions(){try{return JSON.parse(localStorage.getItem(STORAGE_CUSTOM_KEY)||"[]")}catch{return []}}
+function saveCustomQuestions(items){localStorage.setItem(STORAGE_CUSTOM_KEY, JSON.stringify(items))}
+function getResults(){try{return JSON.parse(localStorage.getItem(STORAGE_RESULTS_KEY)||"[]")}catch{return []}}
+function getUsers(){try{return JSON.parse(localStorage.getItem(STORAGE_USERS_KEY)||"[]")}catch{return []}}
+const session = getCurrentUser();
+if(!session || session.role !== "admin"){ window.location.href = "index.html"; }
+
+const baseQuizData = new Array(417).fill(0);
+const els = {
+  baseCount: document.getElementById("base-count"),
+  customCount: document.getElementById("custom-count"),
+  usersCount: document.getElementById("users-count"),
+  resultsCount: document.getElementById("results-count"),
+  categoryOptions: document.getElementById("category-options"),
+  qCategory: document.getElementById("q-category"),
+  qQuestion: document.getElementById("q-question"),
+  qOpt1: document.getElementById("q-opt1"),
+  qOpt2: document.getElementById("q-opt2"),
+  qOpt3: document.getElementById("q-opt3"),
+  qOpt4: document.getElementById("q-opt4"),
+  qCorrect: document.getElementById("q-correct"),
+  saveQuestionBtn: document.getElementById("save-question-btn"),
+  saveFeedback: document.getElementById("save-feedback"),
+  resultsTable: document.getElementById("results-table"),
+  customQuestionsList: document.getElementById("custom-questions-list"),
+  usersList: document.getElementById("users-list"),
+  clearCustomBtn: document.getElementById("clear-custom-btn"),
+  importFile: document.getElementById("import-file"),
+  importBtn: document.getElementById("import-btn"),
+  importFeedback: document.getElementById("import-feedback"),
+  adminUserSetting: document.getElementById("admin-user-setting"),
+  adminPassSetting: document.getElementById("admin-pass-setting"),
+  saveSettingsBtn: document.getElementById("save-settings-btn"),
+  settingsFeedback: document.getElementById("settings-feedback"),
+  exportBtn: document.getElementById("export-btn"),
+  backBtn: document.getElementById("back-btn"),
+  logoutBtn: document.getElementById("logout-btn")
+};
+
+function formatArabicDate(value){ try { return new Date(value).toLocaleString("ar-EG"); } catch { return value || ""; } }
+
+function refreshDatalist(){
+  const categories = [...new Set([...baseQuizData, ...getCustomQuestions()].map(q => q.category))].sort();
+  els.categoryOptions.innerHTML = categories.map(c => `<option value="${c}"></option>`).join("");
+}
+
+function renderStats(){
+  els.baseCount.textContent = baseQuizData.length;
+  els.customCount.textContent = getCustomQuestions().length;
+  els.usersCount.textContent = getUsers().length;
+  els.resultsCount.textContent = getResults().length;
+}
+
+function renderResults(){
+  const rows = getResults();
+  els.resultsTable.innerHTML = "";
+  if(!rows.length){
+    els.resultsTable.innerHTML = '<tr><td colspan="5"><div class="info-note">لا توجد نتائج محفوظة بعد.</div></td></tr>';
+    return;
+  }
+  rows.slice(0,20).forEach(r => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td>${r.user}</td><td>${r.category}</td><td>${r.score} / ${r.total}</td><td>${r.percent}%</td><td>${formatArabicDate(r.at)}</td>`;
+    els.resultsTable.appendChild(tr);
+  });
+}
+
+function renderUsers(){
+  const users = getUsers();
+  els.usersList.innerHTML = "";
+  if(!users.length){
+    els.usersList.innerHTML = '<div class="info-note">لا يوجد مستخدمون محفوظون بعد.</div>';
+    return;
+  }
+  const results = getResults();
+  users.forEach(user => {
+    const count = results.filter(r => r.user === user.name).length;
+    const item = document.createElement("div");
+    item.className = "item";
+    item.innerHTML = `<div><div style="font-weight:800">${user.name}</div><div class="muted">${user.role === "admin" ? "مشرف" : "متدرب"} · ${formatArabicDate(user.at || user.createdAt)}</div></div><div class="badge">${count} محاولة</div>`;
+    els.usersList.appendChild(item);
+  });
+}
+
+function renderCustomQuestions(){
+  const items = getCustomQuestions();
+  els.customQuestionsList.innerHTML = "";
+  if(!items.length){
+    els.customQuestionsList.innerHTML = '<div class="info-note">لا توجد أسئلة مضافة حتى الآن.</div>';
+    return;
+  }
+  items.forEach((item, index) => {
+    const box = document.createElement("div");
+    box.className = "item";
+    box.innerHTML = `<div style="flex:1"><div style="font-weight:800">${item.question}</div><div class="muted">${item.category} · الإجابة الصحيحة: ${item.options[item.correct]}</div></div><div class="inline-actions"><button class="btn btn-secondary edit-btn" data-index="${index}">تعديل</button><button class="btn btn-danger delete-btn" data-index="${index}">حذف</button></div>`;
+    box.querySelector(".delete-btn").addEventListener("click", () => {
+      const next = getCustomQuestions();
+      next.splice(index, 1);
+      saveCustomQuestions(next);
+      const savedAdmin = getAdminSettings();
+els.adminUserSetting.value = savedAdmin.username;
+els.adminPassSetting.value = savedAdmin.password;
+
+document.querySelectorAll(".tab-btn").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".tab-btn").forEach((b) => b.classList.remove("active"));
+    document.querySelectorAll(".section-panel").forEach((p) => p.classList.remove("active"));
+    btn.classList.add("active");
+    document.getElementById(btn.dataset.tab).classList.add("active");
+  });
+});
+
+els.importBtn.addEventListener("click", async () => {
+  const file = els.importFile.files?.[0];
+  if (!file) {
+    els.importFeedback.textContent = "يرجى اختيار ملف JSON أولاً.";
+    return;
+  }
+  try {
+    const text = await file.text();
+    const parsed = JSON.parse(text);
+    if (!Array.isArray(parsed)) throw new Error("INVALID_ARRAY");
+    const valid = parsed.filter((item) =>
+      item && typeof item.category === "string" && typeof item.question === "string" &&
+      Array.isArray(item.options) && item.options.length === 4 &&
+      Number.isInteger(item.correct) && item.correct >= 0 && item.correct <= 3
+    ).map((item) => ({
+      id: item.id || Date.now() + Math.floor(Math.random() * 100000),
+      category: item.category.trim(),
+      question: item.question.trim(),
+      options: item.options.map((x) => String(x || "").trim()),
+      correct: Number(item.correct)
+    }));
+    if (!valid.length) throw new Error("NO_VALID");
+    const merged = [...valid, ...getCustomQuestions()];
+    saveCustomQuestions(merged);
+    els.importFeedback.textContent = `تم استيراد ${valid.length} سؤال بنجاح.`;
+    renderAll();
+  } catch (e) {
+    els.importFeedback.textContent = "تعذر استيراد الملف. تأكد أن البنية صحيحة.";
+  }
+});
+
+els.saveSettingsBtn.addEventListener("click", () => {
+  const username = String(els.adminUserSetting.value || "").trim();
+  const password = String(els.adminPassSetting.value || "").trim();
+  if (!username || !password) {
+    els.settingsFeedback.textContent = "يرجى إدخال اسم المستخدم وكلمة المرور الجديدة.";
+    return;
+  }
+  saveAdminSettings({ username, password });
+  els.settingsFeedback.textContent = "تم تحديث بيانات المشرف بنجاح.";
+  const session = getCurrentUser();
+  if (session?.role === "admin") {
+    localStorage.setItem(STORAGE_USER_KEY, JSON.stringify({ ...session, name: username }));
+  }
+});
+
+
+renderAll();
+    });
+    box.querySelector(".edit-btn").addEventListener("click", () => {
+      els.qCategory.value = item.category;
+      els.qQuestion.value = item.question;
+      els.qOpt1.value = item.options[0] || "";
+      els.qOpt2.value = item.options[1] || "";
+      els.qOpt3.value = item.options[2] || "";
+      els.qOpt4.value = item.options[3] || "";
+      els.qCorrect.value = String(item.correct);
+      els.saveQuestionBtn.dataset.editIndex = String(index);
+      els.saveQuestionBtn.textContent = "✏️ تحديث السؤال";
+      els.saveFeedback.textContent = "تم تحميل السؤال في النموذج للتعديل.";
+      window.scrollTo({top: 0, behavior: "smooth"});
+    });
+    els.customQuestionsList.appendChild(box);
+  });
+}
+
+function renderAll(){
+  refreshDatalist();
+  renderStats();
+  renderResults();
+  renderUsers();
+  renderCustomQuestions();
+}
+
+els.saveQuestionBtn.addEventListener("click", () => {
+  const category = (els.qCategory.value || "").trim();
+  const question = (els.qQuestion.value || "").trim();
+  const options = [els.qOpt1.value, els.qOpt2.value, els.qOpt3.value, els.qOpt4.value].map(v => String(v || "").trim());
+  const correct = Number(els.qCorrect.value);
+
+  if(!category || !question || options.some(v => !v)){
+    els.saveFeedback.textContent = "يرجى تعبئة القسم والسؤال وجميع الخيارات.";
+    return;
+  }
+
+  const current = getCustomQuestions();
+  const editIndex = els.saveQuestionBtn.dataset.editIndex;
+  if (editIndex !== undefined && editIndex !== "") {
+    current[Number(editIndex)] = { ...current[Number(editIndex)], category, question, options, correct };
+    els.saveFeedback.textContent = "تم تحديث السؤال بنجاح.";
+    delete els.saveQuestionBtn.dataset.editIndex;
+    els.saveQuestionBtn.textContent = "💾 حفظ السؤال";
+  } else {
+    const nextId = Date.now();
+    current.unshift({ id: nextId, category, question, options, correct });
+    els.saveFeedback.textContent = "تم حفظ السؤال بنجاح وسيظهر داخل المنصة مباشرة.";
+  }
+  saveCustomQuestions(current);
+
+  els.qCategory.value = "";
+  els.qQuestion.value = "";
+  els.qOpt1.value = "";
+  els.qOpt2.value = "";
+  els.qOpt3.value = "";
+  els.qOpt4.value = "";
+  els.qCorrect.value = "0";
+  renderAll();
+});
+
+els.clearCustomBtn.addEventListener("click", () => {
+  localStorage.removeItem(STORAGE_CUSTOM_KEY);
+  renderAll();
+});
+
+els.exportBtn.addEventListener("click", () => {
+  const data = JSON.stringify(getCustomQuestions(), null, 2);
+  const blob = new Blob([data], {type:"application/json;charset=utf-8"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "custom_questions_export.json";
+  a.click();
+  URL.revokeObjectURL(a.href);
+});
+
+els.backBtn.addEventListener("click", () => {
+  window.location.href = "index.html";
+});
+els.logoutBtn.addEventListener("click", () => {
+  clearCurrentUser();
+  window.location.href = "index.html";
+});
+
+renderAll();
+</script>
+</body>
+</html>
